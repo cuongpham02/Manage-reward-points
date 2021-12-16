@@ -16,6 +16,7 @@
                     <div class="m-sm-4">
                         <label>Tên Nhân Viên:</label>
                         <select name="name">
+                            <option>---none---</option>
                         @foreach($staffs as $staff)
                             <option value="{{$staff->id}}">{{$staff->name}}</option>
                         @endforeach

@@ -4,6 +4,13 @@
         <div >
             <h1 style="text-align: center;">Thông tin chi tiết điểm thưởng nhân viên - {{$staff->name}}</h1>
         </div>
+         <?php
+                                $message=Session::get('message');
+                                if ($message) {
+                                    echo '<span style="color:blue" class="textalert">'.$message.'</span>';
+                                    Session::put('message',null);
+                                 }
+                             ?>
         <table class="table table-bordered table-hover table-striped">
             <thead class="bg-info text-light">
                 <th style="width: 7.5%;"><i class="bi bi-grid-3x3-gap-fill"></i> No</th>

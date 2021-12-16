@@ -30,11 +30,12 @@ class StaffController extends Controller
     public function staff_detail($id){
         $staff=Staff::where('id',$id)->first();
         $points=DB::table('point__staff')
+                ->select(DB::raw('point__staff.*,points.desc,points.number_point'))
                 ->join('staffs' , 'staffs.id', '=', 'point__staff.staff_id')
                 ->join('points' , 'points.id', '=', 'point__staff.point_id')
                 ->where('staffs.id','=',$id)
                 ->orderBy('point__staff.date','DESC')
-                ->get();     
+                ->paginate(20);  
         return view('backend.staff.detail_points_staff',compact('staff','points'));
     }
     public function create(){
@@ -43,7 +44,7 @@ class StaffController extends Controller
     public function store_staff(StoreStaffRequest $request){
         $data=$request->except(['_token','add_staff']);
         Staff::insert($data);
-        return Redirect(route('show-all-staff'));
+        return Redirect(route('show-all-staff'))->with('message','Add thành công');;
     }
     public function edit_staff($id){
         $staff=Staff::findOrfail($id);
@@ -75,17 +76,25 @@ class StaffController extends Controller
             $data=$request->all();
         }
         $staff->update($data);
-        return Redirect(route('show-all-staff'));
+        return Redirect(route('show-all-staff'))->with('message','Update thành công');;
     }
 
 //Cộng hoặc Trừ điểm thưởng;
     public function bonus_points($id){
             $staff=Staff::findOrfail($id);
-            $points=Point::all();
+            $points=Point::orderBy('number_point','desc')->get();
             $date=Carbon::now()->toDateString();
         return view('backend.staff.bonus_point',compact('staff','points','date'));
     }
     public function save_bonus(Request $request,$id){
+        $this->validate($request,[
+                'point_id'=>'required',
+              
+            ],
+            [
+                'point_id.required' => 'Chưa chọn tiêu chí điểm',
+            ]);
+
         $list=$request->point_id;
         $date=$request->date;
         $staff=Staff::findOrfail($id);
@@ -120,10 +129,15 @@ class StaffController extends Controller
                 $staff->forceDelete();
             }
             DB::commit();
-            return redirect()->back()->with('message','Xóa user thành công');
+            return redirect()->back()->with('message','Xóa NV thành công');
         } catch (\Exception $exception) {
                 DB::rollBack();
         }
+    }
+    public function delete_detail($id){
+        $detail=Point_Staff::findOrfail($id);
+        $detail->delete();
+        return redirect()->back()->with('message','Xóa thành công');
     }
 
 }

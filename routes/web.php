@@ -23,6 +23,7 @@ Route::get('/','HomeController@index')->name('home');
 // });
 Route::get('test','PointController@index');
 // Route::get('add-staff','StaffController@add_staff')->name('add-new-staff');
+
 Route::group(['prefix' => 'staff'], function() {
     Route::get('/','StaffController@index')->name('show-all-staff');
     Route::get('staff-detail/{id}','StaffController@staff_detail')->name('show-detail-staff');

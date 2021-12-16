@@ -47,7 +47,7 @@
                                     @if ($errors->has('phone'))
                                     <p style="color:red;"><span style="color:red;"> *</span>{{$errors->first('phone') }}</p>
                                 @endif
-                                <button type="submit" name="add_staff" class="btn btn-info">Thêm NV</button>
+                                <button type="submit" name="add_staff" class="btn btn-info">Update NV</button>
                             </form>
                             </div>
 
