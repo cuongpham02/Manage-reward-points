@@ -89,7 +89,6 @@ class StaffController extends Controller
     public function save_bonus(Request $request,$id){
         $this->validate($request,[
                 'point_id'=>'required',
-              
             ],
             [
                 'point_id.required' => 'Chưa chọn tiêu chí điểm',
@@ -120,13 +119,13 @@ class StaffController extends Controller
 
 //Xóa và gỡ nhân viên ra khỏi bảng staff_point
     public function destroy_staff($id){
-        $staff=Staff::findOrfail($id);
+        $staffID=Staff::findOrfail($id);
         try {
             DB::beginTransaction();
-            $staff=Staff::findOrfail($id);
-            if($staff){
-               $staff->points()->detach();
-                $staff->forceDelete();
+            $staffID=Staff::findOrfail($id);
+            if($staffID){
+               $staffID->points()->detach();
+                $staffID->forceDelete();
             }
             DB::commit();
             return redirect()->back()->with('message','Xóa NV thành công');
@@ -135,8 +134,8 @@ class StaffController extends Controller
         }
     }
     public function delete_detail($id){
-        $detail=Point_Staff::findOrfail($id);
-        $detail->delete();
+        $point_staffID=Point_Staff::findOrfail($id);
+        $point_staffID->delete();
         return redirect()->back()->with('message','Xóa thành công');
     }
 
