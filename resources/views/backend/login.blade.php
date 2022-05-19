@@ -21,12 +21,15 @@
         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
             <li class="nav-item text-center"> <a class="nav-link active btl" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Login</a> </li>
         </ul>
-        <form>  
-        <div class="tab-content" id="pills-tabContent">
+        <form action="{{ route('admin.checklogin') }}" method="post">
+            @csrf  
+            <div class="tab-content" id="pills-tabContent">
                 <div class="form px-4 pt-5"> 
                     <input type="text" name="email" class="form-control" placeholder="Email"> 
-                    <input type="text" name="password" class="form-control" placeholder="Password"> 
-                    <br>
+                    <input type="password" name="password" class="form-control" placeholder="Password">
+
+                    <input style="margin-left:0px;" class="form-check-input" type="checkbox" name="remember"><span style="margin-left:18px">Remember me?</span>
+                    <br><br>
                 <input type="submit" name="" value="Login" class="btn btn-dark btn-block"></div>
             </div>
         </div>

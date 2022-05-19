@@ -1,0 +1,18 @@
+            $table->bigIncrements('id');
+            $table->string('name',100);
+            $table->string('email',100)->unique();
+            $table->string('phone',20);
+            $table->tinyInteger('status')->nullable();
+            $table->string('birthday',30);
+            $table->unsignedBigInteger('department_id',100);
+            $table->foreign('department_id')->references('id')->on('departments');
+            $table->timestamps();
+            $table->softDeletes();
+
+$table->bigIncrements('id');
+            $table->unsignedBigInteger('staff_id');
+            $table->unsignedBigInteger('point_id');
+            $table->foreign('staff_id')->references('id')->on('staffs');
+            $table->foreign('point_id')->references('id')->on('points');
+            $table->date('date');
+            $table->timestamps();

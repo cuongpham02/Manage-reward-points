@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePointRequest extends FormRequest
+class EditPointRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class StorePointRequest extends FormRequest
     public function rules()
     {
         return [
-            'desc'=>'required|max:100|unique:points,desc|min:3',
+            'desc'=>'required|max:100|unique:points,desc,'.$this->id.',id|min:3',
             'number_point' => 'required|numeric|between:-10,10',
         ];
     }

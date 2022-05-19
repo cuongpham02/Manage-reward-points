@@ -62,5 +62,6 @@
     <div>
         @yield('conten')
     </div>
+    @incluce('backend.js.changstatusajax')
 </body>
 </html>

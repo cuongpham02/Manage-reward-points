@@ -18,8 +18,10 @@ class CreateStaffsTable extends Migration
             $table->string('name',100);
             $table->string('email',100)->unique();
             $table->string('phone',20);
+            $table->tinyInteger('status')->nullable();
             $table->string('birthday',30);
-            $table->string('department',100)->nullable();
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')->references('id')->on('departments');
             $table->timestamps();
             $table->softDeletes();
         });

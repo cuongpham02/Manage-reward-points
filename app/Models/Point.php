@@ -1,13 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Point extends Model
 {
-    public $timestamps = false;
+        public $timestamps = false;
         protected $fillable = [
               'desc', 'number_point'
         ];

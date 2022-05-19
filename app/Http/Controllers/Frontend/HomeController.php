@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Frontend;
 use DB;
 use Session;
 use Carbon\Carbon;
-use App\Staff;
-use App\Point;
+use App\Models\Staff;
+use App\Models\Point;
 use App\Point_Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {

@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 use DB;
 use Session;
 use Carbon\Carbon;
-use App\Staff;
-use App\Point;
+use App\Models\Staff;
+use App\Models\Department;
+use App\Models\Point;
 use App\Point_Staff;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreStaffRequest;
-use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\EditStaffRequest;
+use App\Http\Controllers\Controller;
 
 class StaffController extends Controller
 {
@@ -19,24 +21,15 @@ class StaffController extends Controller
         // DB::enableQueryLog();
             $staffs = DB::table('staffs')
                 ->select(DB::raw('staffs.*,SUM(points.number_point) as tong'))
-                ->leftjoin('point__staff' , 'staffs.id', '=', 'point__staff.staff_id')
-                ->leftjoin('points' , 'points.id', '=', 'point__staff.point_id')
+                ->leftjoin('point_staff' , 'staffs.id', '=', 'point_staff.staff_id')
+                ->leftjoin('points' , 'points.id', '=', 'point_staff.point_id')
                 ->groupBy('staffs.id')
-                ->get();
-        // dd(DB::enableQueryLog());
-            // dd($staffs);
+                ->paginate(config('paginatestaff'));
         return view('backend.staff.show_staff')->with(compact('staffs','month'));
     }
-    public function staff_detail($id){
-        $staff=Staff::where('id',$id)->first();
-        $points=DB::table('point__staff')
-                ->select(DB::raw('point__staff.*,points.desc,points.number_point'))
-                ->join('staffs' , 'staffs.id', '=', 'point__staff.staff_id')
-                ->join('points' , 'points.id', '=', 'point__staff.point_id')
-                ->where('staffs.id','=',$id)
-                ->orderBy('point__staff.date','DESC')
-                ->paginate(20);  
-        return view('backend.staff.detail_points_staff',compact('staff','points'));
+    public function showsDetailStaffWithPoint($id){
+        $staff=Staff::with('points')->findOrfail($id);
+        return view('backend.staff.detail_points_staff',compact('staff'));
     }
     public function create(){
         return view('backend.staff.new_staff');
@@ -50,43 +43,20 @@ class StaffController extends Controller
         $staff=Staff::findOrfail($id);
         return view('backend.staff.edit_staff',compact('staff'));
     }
-    public function update_staff(Request $request,$id){
+    public function update_staff(EditStaffRequest $request,$id){
         $staff=Staff::findOrfail($id);
-        $get_email=$staff->email;
-        $email=$request->email;
-        if ($email==$get_email ) {
-            $data=$request->all();
-        } else {
-                $this->validate($request,[
-                'name'=>'required|max:100|min:3',
-                'birthday' => 'required',
-                'email'=>'required|email|unique:staffs,email|max:100',
-                'phone' => 'required|numeric|digits:10',
-            ],
-            [
-                'name.required' => 'Bạn chưa nhập tên thành viên',
-                'email.required' => 'Bạn chưa nhập email',
-                'birthday.required' => 'Bạn chưa nhập ngày sinh',
-                'email.unique' => 'Email này đã tồn tại',
-                'phone.numeric' => 'SDT là số',
-                'phone.required' => 'Nhập số điện thoại',
-                'phone.digits' => 'Nhập đúng số điện thoại 10 số',
-                'password.required' => 'Bạn chưa nhập Mật khẩu',
-            ]);
-            $data=$request->all();
-        }
+        $data=$request->all();
         $staff->update($data);
-        return Redirect(route('show-all-staff'))->with('message','Update thành công');;
+        return Redirect()->route('show-all-staff')->with('message','Update thành công');;
     }
 
-//Cộng hoặc Trừ điểm thưởng;
-    public function bonus_points($id){
+    public function showChooseBonusPointsForStaff($id){
             $staff=Staff::findOrfail($id);
             $points=Point::orderBy('number_point','desc')->get();
             $date=Carbon::now()->toDateString();
         return view('backend.staff.bonus_point',compact('staff','points','date'));
     }
-    public function save_bonus(Request $request,$id){
+    public function savePointOfStaff(Request $request,$id){
         $this->validate($request,[
                 'point_id'=>'required',
             ],
@@ -117,15 +87,14 @@ class StaffController extends Controller
         return Redirect(route('show-all-staff'))->with('message','Thành công');
     }
 
-//Xóa và gỡ nhân viên ra khỏi bảng staff_point
     public function destroy_staff($id){
-        $staffID=Staff::findOrfail($id);
+        $staffId=Staff::findOrfail($id);
         try {
             DB::beginTransaction();
-            $staffID=Staff::findOrfail($id);
-            if($staffID){
-               $staffID->points()->detach();
-                $staffID->forceDelete();
+            $staffId=Staff::findOrfail($id);
+            if($staffId){
+               $staffId->points()->detach();
+                $staffId->forceDelete();
             }
             DB::commit();
             return redirect()->back()->with('message','Xóa NV thành công');
@@ -133,10 +102,9 @@ class StaffController extends Controller
                 DB::rollBack();
         }
     }
-    public function delete_detail($id){
+    public function deletePointOnStaff($id){
         $point_staffID=Point_Staff::findOrfail($id);
         $point_staffID->delete();
         return redirect()->back()->with('message','Xóa thành công');
     }
-
 }
